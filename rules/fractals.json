@@ -38,5 +38,19 @@
     },
     "angle": 90,
     "n": 4
+  },
+  {
+    "name": "Plant",
+    "variables": [
+      "X",
+      "F"
+    ],
+    "axiom": "X",
+    "rules": {
+      "X": "F+[[X]-X]-F[-FX]+X",
+      "F": "FF"
+    },
+    "angle": 25,
+    "n": 6
   }
 ]
