@@ -3,6 +3,12 @@ import turtle
 positions = []
 
 
+def char_range(c1, c2):
+    """Generates the characters from `c1` to `c2`, inclusive."""
+    for c in range(ord(c1), ord(c2)+1):
+        yield chr(c)
+
+
 def draw_fractal(fractal, settings, distance):
     t = turtle.Turtle()  # create the turtle
     wn = turtle.Screen()
@@ -13,7 +19,7 @@ def draw_fractal(fractal, settings, distance):
     t.speed(0)
 
     for c in fractal:
-        if c in settings['variables']:
+        if c in 'ABCDE':
             t.forward(distance)
         elif c == '+':
             t.right(settings['angle'])

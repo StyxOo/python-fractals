@@ -1,10 +1,6 @@
 [
   {
     "name": "Algae",
-    "variables": [
-      "A",
-      "B"
-    ],
     "axiom": "A",
     "rules": {
       "A": "AB",
@@ -15,40 +11,29 @@
   },
   {
     "name": "Fractal Binary Tree",
-    "variables": [
-      "0",
-      "1"
-    ],
-    "axiom": "0",
+    "axiom": "A",
     "rules": {
-      "1": "11",
-      "0": "1[0]0"
+      "B": "B",
+      "A": "B[A]A"
     },
     "angle": 0,
     "n": 3
   },
   {
     "name": "Koch Curve",
-    "variables": [
-      "F"
-    ],
     "axiom": "F",
     "rules": {
-      "F": "F+F-F-F+F"
+      "A": "A+A-A-A+A"
     },
     "angle": 90,
     "n": 4
   },
   {
     "name": "Plant",
-    "variables": [
-      "X",
-      "F"
-    ],
     "axiom": "X",
     "rules": {
-      "X": "F+[[X]-X]-F[-FX]+X",
-      "F": "FF"
+      "X": "A+[[X]-X]-A[-AX]+X",
+      "A": "AA"
     },
     "angle": 25,
     "n": 6
