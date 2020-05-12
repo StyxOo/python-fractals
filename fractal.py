@@ -1,5 +1,5 @@
-from rules import settings
-import processor
+from fractal.rules import settings
+from fractal import processor
 import painter
 
 if __name__ == '__main__':
