@@ -13,6 +13,14 @@ def setup_turtle(canvas):
     _t.speed(0)
 
 
+def change_speed(value):
+    if _t is None:
+        print("Turtle is not set up yet. Run setup_turtle command first!")
+        return
+
+    _t.speed(value)
+
+
 def draw_fractal(fractal, angle, distance):
     if _t is None:
         print("Turtle is not set up yet. Run setup_turtle command first!")
