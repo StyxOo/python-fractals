@@ -1,47 +1,46 @@
 import turtle
 
-positions = []
+_t = None
+_positions = []
 
 
-def char_range(c1, c2):
-    """Generates the characters from `c1` to `c2`, inclusive."""
-    for c in range(ord(c1), ord(c2)+1):
-        yield chr(c)
+def setup_turtle(canvas):
+    global _t
+    _t = turtle.RawTurtle(canvas)
+    _t.up()
+    _t.back(200)
+    _t.down()
+    _t.speed(0)
 
 
-def draw_fractal(fractal, settings, distance):
-    t = turtle.Turtle()  # create the turtle
-    wn = turtle.Screen()
+def draw_fractal(fractal, angle, distance):
+    if _t is None:
+        print("Turtle is not set up yet. Run setup_turtle command first!")
+        return
 
-    t.up()
-    t.back(200)
-    t.down()
-    t.speed(0)
+    _t.reset()
 
     for c in fractal:
         if c in 'ABCDE':
-            t.forward(distance)
+            _t.forward(distance)
         elif c == '+':
-            t.right(settings['angle'])
+            _t.right(angle)
         elif c == '-':
-            t.left(settings['angle'])
+            _t.left(angle)
         elif c == '[':
-            save_position(t)
+            _save_position(_t)
         elif c == ']':
-            jump_to_last_position(t)
-        else:
-            print("Unknown character '{}' in fractal".format(c))
-    wn.exitonclick()
+            _jump_to_last_position(_t)
 
 
-def save_position(t):
+def _save_position(t):
     position = {'x': t.xcor(), 'y': t.ycor(), 'heading': t.heading()}
-    positions.append(position)
+    _positions.append(position)
 
 
-def jump_to_last_position(t):
-    position = positions[-1]
-    positions.pop()
+def _jump_to_last_position(t):
+    position = _positions[-1]
+    _positions.pop()
     t.penup()
     t.setx(position['x'])
     t.sety(position['y'])
