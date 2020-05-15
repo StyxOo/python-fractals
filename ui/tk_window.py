@@ -1,12 +1,6 @@
 import painter
 from tkinter import *
-
-
-root = Tk()
-
-# Create a canvas for turtle to draw on
-canvas = Canvas(root, width=300, height=300)
-canvas.grid(row=0, column=0, columnspan=2)
+from tkinter import ttk
 
 
 def on_draw():
@@ -22,16 +16,30 @@ def on_speed_change(value):
     painter.change_speed(value)
 
 
+root = Tk()
+
+# Create two main tabs
+notebook = ttk.Notebook(root)
+load_tab = Frame(notebook)
+edit_tab = Frame(notebook)
+notebook.add(load_tab, text="Load")
+notebook.add(edit_tab, text="Edit")
+notebook.grid(row=0, column=0)
+
+# Create a canvas for turtle to draw on
+canvas = Canvas(edit_tab, width=600, height=600)
+canvas.grid(row=0, column=0, columnspan=2)
+
 # Create a label to display fractal
-fractal_label = Label(root, text="Fractal will display here")
+fractal_label = Label(edit_tab, text="Fractal will display here")
 fractal_label.grid(row=1, column=0, columnspan=2, sticky=W)
 
 # Create a slider for drawing speed
-draw_speed = Scale(root, length=200, from_=0, to=10, orient=HORIZONTAL, command=on_speed_change)
+draw_speed = Scale(edit_tab, length=400, from_=0, to=10, orient=HORIZONTAL, command=on_speed_change)
 draw_speed.grid(row=2, column=0)
 
 # Create a button to draw fractal
-draw_button = Button(root, text="Draw", command=on_draw)
+draw_button = Button(edit_tab, width=20, height=2, text="Draw", command=on_draw)
 draw_button.grid(row=2, column=1)
 
 
