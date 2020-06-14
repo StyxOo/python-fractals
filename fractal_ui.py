@@ -5,6 +5,7 @@ This creates the main application to be used. It requests windows as required fo
 from PySide2.QtWidgets import *
 
 import sys
+import fractal
 
 from ui_windows.dashboard import Dashboard
 from ui_windows.edit import Edit
@@ -21,13 +22,13 @@ class MyApplication(QMainWindow):
         content_menu.addAction('show Edit', self.show_edit)
 
     def show_dashboard(self):
-        dashboard = Dashboard(self)
+        dashboard = Dashboard()
         self.setCentralWidget(dashboard)
         dashboard.show()
         self.setWindowTitle('Dashboard')
 
     def show_edit(self):
-        edit = Edit(self)
+        edit = Edit(info=fractal.fractals[0])
         self.setCentralWidget(edit)
         edit.show()
         self.setWindowTitle('Edit')

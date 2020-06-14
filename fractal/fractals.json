@@ -37,5 +37,35 @@
     },
     "angle": 25,
     "n": 6
+  },
+  {
+    "name": "Algae",
+    "axiom": "A",
+    "rules": {
+      "A": "AB",
+      "B": "A"
+    },
+    "angle": "0",
+    "n": "7"
+  },
+  {
+    "name": "Algae",
+    "axiom": "A",
+    "rules": {
+      "A": "AB",
+      "B": "A"
+    },
+    "angle": "0",
+    "n": "7"
+  },
+  {
+    "name": "Algae",
+    "axiom": "A",
+    "rules": {
+      "A": "AB",
+      "B": "A"
+    },
+    "angle": "0",
+    "n": "7"
   }
 ]
