@@ -18,19 +18,33 @@ class Edit(QWidget):
         # Create two main sections of edit window
         main_layout = QHBoxLayout()
         draw_layout = QVBoxLayout()
-        settings_layout = QVBoxLayout()
+        self.settings_layout = Settings()
         main_layout.addLayout(draw_layout)
-        main_layout.addLayout(settings_layout)
+        main_layout.addWidget(self.settings_layout)
 
         # Flesh out draw section
         draw_text = QTextEdit('Draw')
         draw_layout.addWidget(draw_text)
 
-        # Flesh out settings section
+        # Set main layout
+        self.setLayout(main_layout)
+
+        # Load fractal if applicable
+        if info is not None:
+            self.load_fractal(info)
+
+    def load_fractal(self, info):
+        self.settings_layout.load_fractal(info)
+
+
+class Settings(QWidget):
+    def __init__(self, parent=None):
+        super(Settings, self).__init__(parent)
+        main_layout = QVBoxLayout()
         parameters_layout = QVBoxLayout()
         save_layout = QHBoxLayout()
-        settings_layout.addLayout(parameters_layout)
-        settings_layout.addLayout(save_layout)
+        main_layout.addLayout(parameters_layout)
+        main_layout.addLayout(save_layout)
 
         # Create parameters
         # Axiom
@@ -57,12 +71,7 @@ class Edit(QWidget):
         # Set main layout
         self.setLayout(main_layout)
 
-        # Load fractal if applicable
-        if info is not None:
-            self.load_fractal(info)
-
-    @Slot()
-    def save_fractal(self):
+    def read_info(self):
         info = {}
         info['name'] = self.save.input.text()
         info['axiom'] = self.axiom.input.text()
@@ -73,6 +82,11 @@ class Edit(QWidget):
             info['rules'][key] = value
         info['angle'] = self.angle.input.text()
         info['n'] = str(self.iterations.slider.value())
+        return info
+
+    @Slot()
+    def save_fractal(self):
+        info = self.read_info()
         fractal.save_fractal(info)
 
     def load_fractal(self, info):
@@ -90,6 +104,9 @@ class Axiom(QWidget):
         layout = QVBoxLayout()
         self.label = QLabel('Axiom:')
         self.input = QLineEdit()
+        rx = QRegExp("[A-Z]+")
+        validator = QRegExpValidator(rx, self)
+        self.input.setValidator(validator)
         layout.addWidget(self.label)
         layout.addWidget(self.input)
         self.setLayout(layout)
@@ -112,6 +129,8 @@ class Angle(QWidget):
         self.slider.valueChanged.connect(self.on_angle_slider_value_changed)
         value_layout.addWidget(self.slider)
         self.input = QLineEdit()
+        validator = QIntValidator(0, 180, self)
+        self.input.setValidator(validator)
         self.input.textChanged.connect(self.on_angle_input_value_changed)
         value_layout.addWidget(self.input)
         self.setLayout(layout)
@@ -180,8 +199,14 @@ class Rule(QWidget):
         super(Rule, self).__init__(parent)
         layout = QHBoxLayout()
         self.from_input = QLineEdit()
+        from_rx = QRegExp("[A-Z]")
+        from_validator = QRegExpValidator(from_rx, self)
+        self.from_input.setValidator(from_validator)
         arrow = QLabel('->')
         self.to_input = QLineEdit()
+        to_rx = QRegExp("[A-Z]+")
+        to_validator = QRegExpValidator(to_rx, self)
+        self.to_input.setValidator(to_validator)
         remove_button = QPushButton('rm')
         remove_button.clicked.connect(self.remove)
         layout.addWidget(self.from_input)
@@ -216,6 +241,9 @@ class Save(QWidget):
         super(Save, self).__init__(parent)
         layout = QHBoxLayout()
         self.input = QLineEdit()
+        rx = QRegExp("([A-Z]|[0-9])+")
+        validator = QRegExpValidator(rx, self)
+        self.input.setValidator(validator)
         button = QPushButton('Save')
         button.clicked.connect(self.save)
         layout.addWidget(self.input)
