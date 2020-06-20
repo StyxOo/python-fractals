@@ -21,14 +21,17 @@ class MyApplication(QMainWindow):
         content_menu.addAction('show Dashboard', self.show_dashboard)
         content_menu.addAction('show Edit', self.show_edit)
 
+        self.resize(1200, 800)
+
     def show_dashboard(self):
         dashboard = Dashboard()
+        dashboard.load_signal.connect(self.show_edit)
         self.setCentralWidget(dashboard)
         dashboard.show()
         self.setWindowTitle('Dashboard')
 
-    def show_edit(self):
-        edit = Edit(info=fractal.fractals[0])
+    def show_edit(self, info=None):
+        edit = Edit(info=info)
         self.setCentralWidget(edit)
         edit.show()
         self.setWindowTitle('Edit')
