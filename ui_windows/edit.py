@@ -16,9 +16,10 @@ class Edit(QWidget):
         super(Edit, self).__init__(parent)
 
         # Create two main sections of edit window
-        main_layout = QHBoxLayout()
-        draw_layout = QVBoxLayout()
-        self.settings_layout = Settings()
+        main_layout = QHBoxLayout(self)
+        draw_layout = QVBoxLayout(self)
+        self.settings_layout = Settings(self)
+        self.settings_layout.setFixedWidth(350)
         main_layout.addLayout(draw_layout)
         main_layout.addWidget(self.settings_layout)
 
@@ -40,31 +41,37 @@ class Edit(QWidget):
 class Settings(QWidget):
     def __init__(self, parent=None):
         super(Settings, self).__init__(parent)
-        main_layout = QVBoxLayout()
-        parameters_layout = QVBoxLayout()
-        save_layout = QHBoxLayout()
-        main_layout.addLayout(parameters_layout)
-        main_layout.addLayout(save_layout)
+
+        main_layout = QVBoxLayout(self)
+        parameters_group = QGroupBox("Parameters", self)
+        parameters_layout = QVBoxLayout(parameters_group)
+        parameters_group.setLayout(parameters_layout)
+        save_group = QGroupBox("Save", self)
+        save_group.setFixedHeight(100)
+        save_layout = QHBoxLayout(save_group)
+        save_group.setLayout(save_layout)
+        main_layout.addWidget(parameters_group)
+        main_layout.addWidget(save_group)
 
         # Create parameters
         # Axiom
-        self.axiom = Axiom()
+        self.axiom = Axiom(parameters_group)
         parameters_layout.addWidget(self.axiom)
 
         # Angle
-        self.angle = Angle()
+        self.angle = Angle(parameters_group)
         parameters_layout.addWidget(self.angle)
 
         # Rules
-        self.rules = Rules()
+        self.rules = Rules(parameters_group)
         parameters_layout.addWidget(self.rules)
 
         # Iterations
-        self.iterations = Interations()
+        self.iterations = Interations(parameters_group)
         parameters_layout.addWidget(self.iterations)
 
         # Save
-        self.save = Save()
+        self.save = Save(save_group)
         self.save.save_signal.connect(self.save_fractal)
         save_layout.addWidget(self.save)
 
@@ -98,28 +105,38 @@ class Settings(QWidget):
         self.iterations.slider.setValue(int(info['n']))
 
 
-class Axiom(QWidget):
+class Parameters(QGroupBox):
+    def __init__(self, parent=None):
+        super(Parameters, self).__init__(parent)
+        self.setTitle("Parameters")
+        self.layout = QVBoxLayout()
+        self.init_ui()
+        self.setLayout(self.layout)
+
+    def init_ui(self):
+        pass
+
+
+class Axiom(QGroupBox):
     def __init__(self, parent=None):
         super(Axiom, self).__init__(parent)
+        self.setTitle("Axiom")
+        self.setFixedHeight(75)
         layout = QVBoxLayout()
-        self.label = QLabel('Axiom:')
         self.input = QLineEdit()
         rx = QRegExp("[A-Z]+")
         validator = QRegExpValidator(rx, self)
         self.input.setValidator(validator)
-        layout.addWidget(self.label)
         layout.addWidget(self.input)
         self.setLayout(layout)
 
 
-class Angle(QWidget):
+class Angle(QGroupBox):
     def __init__(self, parent=None):
         super(Angle, self).__init__(parent)
-        layout = QVBoxLayout()
-        label = QLabel('Angle:')
-        layout.addWidget(label)
-        value_layout = QHBoxLayout()
-        layout.addLayout(value_layout)
+        self.setTitle("Angle")
+        self.setFixedHeight(75)
+        layout = QHBoxLayout()
         self.supress_cb = False
         self.slider = QSlider()
         self.slider.setOrientation(Qt.Horizontal)
@@ -127,12 +144,14 @@ class Angle(QWidget):
         self.slider.setMinimum(0)
         self.slider.setMaximum(180)
         self.slider.valueChanged.connect(self.on_angle_slider_value_changed)
-        value_layout.addWidget(self.slider)
+        layout.addWidget(self.slider)
         self.input = QLineEdit()
         validator = QIntValidator(0, 180, self)
         self.input.setValidator(validator)
-        self.input.textChanged.connect(self.on_angle_input_value_changed)
-        value_layout.addWidget(self.input)
+        self.input.textEdited.connect(self.on_angle_input_value_changed)
+        self.input.setFixedWidth(25)
+        self.input.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.input)
         self.setLayout(layout)
 
     def on_angle_slider_value_changed(self):
@@ -156,14 +175,13 @@ class Angle(QWidget):
         self.slider.setValue(int(value))
 
 
-class Rules(QWidget):
+class Rules(QGroupBox):
     rules = []
 
     def __init__(self, parent=None):
         super(Rules, self).__init__(parent)
+        self.setTitle("Rules")
         self.layout = QVBoxLayout()
-        label = QLabel('Rules:')
-        self.layout.addWidget(label)
         add_button = QPushButton(text='Add Rule')
         add_button.clicked.connect(self.add_rule)
         self.layout.addWidget(add_button)
@@ -174,14 +192,14 @@ class Rules(QWidget):
         if from_value is not None and to_value is not None:
             rule.from_input.setText(from_value)
             rule.to_input.setText(to_value)
-        self.layout.insertWidget(len(self.rules) + 1, rule)
+        self.layout.insertWidget(len(self.rules), rule)
         rule.remove_signal.connect(self.remove_rule)
         rule.index = len(self.rules)
         self.rules.append(rule)
 
     @Slot(int)
     def remove_rule(self, index):
-        r = self.layout.takeAt(index + 1)
+        r = self.layout.takeAt(index)
         self.rules.pop(index)
         r.widget().deleteLater()
         self.update_rule_indices()
@@ -199,6 +217,8 @@ class Rule(QWidget):
         super(Rule, self).__init__(parent)
         layout = QHBoxLayout()
         self.from_input = QLineEdit()
+        self.from_input.setFixedWidth(20)
+        self.from_input.setAlignment(Qt.AlignCenter)
         from_rx = QRegExp("[A-Z]")
         from_validator = QRegExpValidator(from_rx, self)
         self.from_input.setValidator(from_validator)
@@ -219,17 +239,17 @@ class Rule(QWidget):
         self.remove_signal.emit(self.index)
 
 
-class Interations(QWidget):
+class Interations(QGroupBox):
     def __init__(self, parent=None):
         super(Interations, self).__init__(parent)
+        self.setTitle("Iterations")
+        self.setFixedHeight(75)
         layout = QVBoxLayout()
-        label = QLabel('Iterations:')
         self.slider = QSlider()
         self.slider.setOrientation(Qt.Horizontal)
         self.slider.setTickInterval(1)
         self.slider.setMinimum(0)
         self.slider.setMaximum(10)
-        layout.addWidget(label)
         layout.addWidget(self.slider)
         self.setLayout(layout)
 
@@ -239,6 +259,7 @@ class Save(QWidget):
 
     def __init__(self, parent=None):
         super(Save, self).__init__(parent)
+        # self.setTitle("Save")
         layout = QHBoxLayout()
         self.input = QLineEdit()
         rx = QRegExp("([A-Z]|[0-9])+")
