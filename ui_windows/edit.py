@@ -54,6 +54,17 @@ class Settings(QWidget):
         main_layout.addWidget(save_group)
 
         # Create parameters
+        # Info
+        label_text = "Information:\n" \
+                     "Characters A-T draw a line. U-Z are placeholders for fractal development.\n" \
+                     "+ and - are right and left turns.\n" \
+                     "[ saves the current position. ] restores it. " \
+                     "Make sure You save a position before trying to load one.\n" \
+                     "These characters can be used in the axiom as well as the rules."
+        info_label = QLabel(label_text)
+        info_label.setWordWrap(True)
+        parameters_layout.addWidget(info_label)
+
         # Axiom
         self.axiom = Axiom(parameters_group)
         parameters_layout.addWidget(self.axiom)
@@ -128,6 +139,7 @@ class Axiom(QGroupBox):
         validator = QRegExpValidator(rx, self)
         self.input.setValidator(validator)
         layout.addWidget(self.input)
+        self.setToolTip("The Axiom is the start point for Your fractal.")
         self.setLayout(layout)
 
 
@@ -140,7 +152,8 @@ class Angle(QGroupBox):
         self.supress_cb = False
         self.slider = QSlider()
         self.slider.setOrientation(Qt.Horizontal)
-        self.slider.setTickInterval(1)
+        self.slider.setTickInterval(45)
+        self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setMinimum(0)
         self.slider.setMaximum(180)
         self.slider.valueChanged.connect(self.on_angle_slider_value_changed)
@@ -152,6 +165,7 @@ class Angle(QGroupBox):
         self.input.setFixedWidth(25)
         self.input.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.input)
+        self.setToolTip("Angle of rotation when fractal contains ( or )")
         self.setLayout(layout)
 
     def on_angle_slider_value_changed(self):
@@ -183,8 +197,10 @@ class Rules(QGroupBox):
         self.setTitle("Rules")
         self.layout = QVBoxLayout()
         add_button = QPushButton(text='Add Rule')
+        add_button.setToolTip("Add new rule")
         add_button.clicked.connect(self.add_rule)
         self.layout.addWidget(add_button)
+        self.setToolTip("Rules describe how a fractal develops in each iteration")
         self.setLayout(self.layout)
 
     def add_rule(self, from_value=None, to_value=None):
@@ -219,15 +235,18 @@ class Rule(QWidget):
         self.from_input = QLineEdit()
         self.from_input.setFixedWidth(20)
         self.from_input.setAlignment(Qt.AlignCenter)
+        self.from_input.setToolTip("Character in fractal to exchange")
         from_rx = QRegExp("[A-Z]")
         from_validator = QRegExpValidator(from_rx, self)
         self.from_input.setValidator(from_validator)
         arrow = QLabel('->')
         self.to_input = QLineEdit()
+        self.to_input.setToolTip("Characters which should be placed instead")
         to_rx = QRegExp("[A-Z]+")
         to_validator = QRegExpValidator(to_rx, self)
         self.to_input.setValidator(to_validator)
         remove_button = QPushButton('rm')
+        remove_button.setToolTip("Remove this rule")
         remove_button.clicked.connect(self.remove)
         layout.addWidget(self.from_input)
         layout.addWidget(arrow)
@@ -243,6 +262,7 @@ class Interations(QGroupBox):
     def __init__(self, parent=None):
         super(Interations, self).__init__(parent)
         self.setTitle("Iterations")
+        self.setToolTip("Number of iterations for fractal")
         self.setFixedHeight(75)
         layout = QVBoxLayout()
         self.slider = QSlider()
@@ -250,6 +270,8 @@ class Interations(QGroupBox):
         self.slider.setTickInterval(1)
         self.slider.setMinimum(0)
         self.slider.setMaximum(10)
+        self.slider.setTickInterval(1)
+        self.slider.setTickPosition(QSlider.TicksBelow)
         layout.addWidget(self.slider)
         self.setLayout(layout)
 
@@ -262,10 +284,12 @@ class Save(QWidget):
         # self.setTitle("Save")
         layout = QHBoxLayout()
         self.input = QLineEdit()
+        self.input.setToolTip("Name under which fractal should be saved")
         rx = QRegExp("([A-Z]|[0-9])+")
         validator = QRegExpValidator(rx, self)
         self.input.setValidator(validator)
         button = QPushButton('Save')
+        button.setToolTip("Save")
         button.clicked.connect(self.save)
         layout.addWidget(self.input)
         layout.addWidget(button)
