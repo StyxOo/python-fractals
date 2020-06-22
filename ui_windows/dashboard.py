@@ -23,6 +23,9 @@ class Dashboard(QWidget):
             fractal_info = FractalInfo(info)
             fractal_info.load_signal.connect(self.load_fractal)
             info_widgets.append(fractal_info)
+        new_fractal = NewFractal()
+        new_fractal.new_fractal.connect(self.load_signal)
+        info_widgets.append(new_fractal)
         info_widget = InfosContainer(info_widgets, self)
 
         scroll_area = QScrollArea()
@@ -44,7 +47,7 @@ class InfosContainer(QWidget):
     def __init__(self, infos, parent=None):
         super(InfosContainer, self).__init__(parent)
         layout = QGridLayout()
-        infos_per_row = 5
+        infos_per_row = 4
         for i in range(len(infos)):
             infos[i].setParent(self)
             column = i % infos_per_row
@@ -59,6 +62,7 @@ class FractalInfo(QGroupBox):
     def __init__(self, info, parent=None):
         super(FractalInfo, self).__init__(parent)
         # self.setFrameShape(QFrame.Box)
+        self.setFixedSize(250, 300)
         self.setTitle(info['name'])
         self.info = info
         layout = QVBoxLayout()
@@ -78,3 +82,27 @@ class FractalInfo(QGroupBox):
         print("Load {0}".format(self.info['name']))
         self.load_signal.emit(self.info)
 
+
+class NewFractal(QGroupBox):
+    new_fractal = Signal(dict)
+
+    def __init__(self, parent=None):
+        super(NewFractal, self).__init__(parent)
+        self.setFixedSize(250, 300)
+        self.setTitle("New Fractal")
+        layout = QVBoxLayout()
+        self.image = QLabel("Fractal Image")
+        dash = QFrame()
+        dash.setFrameShape(QFrame.HLine)
+        layout.addWidget(self.image)
+        layout.addWidget(dash)
+        self.button = QPushButton("New fractal")
+        self.button.clicked.connect(self.create_new)
+        layout.addWidget(self.button)
+        self.setLayout(layout)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        self.create_new()
+
+    def create_new(self):
+        self.new_fractal.emit(None)
