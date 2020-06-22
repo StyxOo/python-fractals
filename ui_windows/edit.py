@@ -55,8 +55,7 @@ class Settings(QWidget):
 
         # Create parameters
         # Info
-        label_text = "Information:\n" \
-                     "Characters A-T draw a line. U-Z are placeholders for fractal development.\n" \
+        label_text = "Characters A-T draw a line. U-Z are placeholders for fractal development.\n" \
                      "+ and - are right and left turns.\n" \
                      "[ saves the current position. ] restores it. " \
                      "Make sure You save a position before trying to load one.\n" \
@@ -199,6 +198,17 @@ class Rules(QGroupBox):
         self.rules = []
         self.setTitle("Rules")
         self.layout = QVBoxLayout()
+
+        self.rules_layout = QVBoxLayout()
+        scroll_area = QScrollArea()
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_area.setWidgetResizable(True)
+        scroll_content = QFrame()
+        scroll_content.setLayout(self.rules_layout)
+        scroll_area.setWidget(scroll_content)
+
+        self.layout.addWidget(scroll_area)
         add_button = QPushButton(text='Add Rule')
         add_button.setToolTip("Add new rule")
         add_button.clicked.connect(self.add_rule)
@@ -211,14 +221,15 @@ class Rules(QGroupBox):
         if from_value is not None and to_value is not None:
             rule.from_input.setText(from_value)
             rule.to_input.setText(to_value)
-        self.layout.insertWidget(len(self.rules), rule)
+        self.rules_layout.addWidget(rule)
+        # self.layout.insertWidget(len(self.rules), rule)
         rule.remove_signal.connect(self.remove_rule)
         rule.index = len(self.rules)
         self.rules.append(rule)
 
     @Slot(int)
     def remove_rule(self, index):
-        r = self.layout.takeAt(index)
+        r = self.rules_layout.takeAt(index)
         self.rules.pop(index)
         r.widget().deleteLater()
         self.update_rule_indices()
@@ -250,6 +261,7 @@ class Rule(QWidget):
         self.to_input.setValidator(to_validator)
         remove_button = QPushButton('rm')
         remove_button.setToolTip("Remove this rule")
+        remove_button.setFixedWidth(40)
         remove_button.clicked.connect(self.remove)
         layout.addWidget(self.from_input)
         layout.addWidget(arrow)
