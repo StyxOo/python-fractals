@@ -264,7 +264,7 @@ class Interations(QGroupBox):
         self.setTitle("Iterations")
         self.setToolTip("Number of iterations for fractal")
         self.setFixedHeight(75)
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
         self.slider = QSlider()
         self.slider.setOrientation(Qt.Horizontal)
         self.slider.setTickInterval(1)
@@ -272,8 +272,16 @@ class Interations(QGroupBox):
         self.slider.setMaximum(10)
         self.slider.setTickInterval(1)
         self.slider.setTickPosition(QSlider.TicksBelow)
+        self.slider.valueChanged.connect(self.on_slider_value_change)
+        self.value_label = QLabel()
+        self.value_label.setFixedWidth(20)
+        self.value_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.slider)
+        layout.addWidget(self.value_label)
         self.setLayout(layout)
+
+    def on_slider_value_change(self):
+        self.value_label.setText(str(self.slider.value()))
 
 
 class Save(QWidget):

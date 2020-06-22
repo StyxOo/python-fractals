@@ -21,7 +21,7 @@ class MyApplication(QMainWindow):
         content_menu.addAction('show Dashboard', self.show_dashboard)
         content_menu.addAction('show Edit', self.show_edit)
 
-        self.resize(1200, 800)
+        self.setFixedSize(1200, 800)
 
     def show_dashboard(self):
         dashboard = Dashboard()
