@@ -168,6 +168,8 @@ class Angle(QGroupBox):
         self.setToolTip("Angle of rotation when fractal contains ( or )")
         self.setLayout(layout)
 
+        self.set_value(0)
+
     def on_angle_slider_value_changed(self):
         if not self.supress_cb:
             try:
@@ -194,6 +196,7 @@ class Rules(QGroupBox):
 
     def __init__(self, parent=None):
         super(Rules, self).__init__(parent)
+        self.rules = []
         self.setTitle("Rules")
         self.layout = QVBoxLayout()
         add_button = QPushButton(text='Add Rule')
@@ -293,7 +296,7 @@ class Save(QWidget):
         layout = QHBoxLayout()
         self.input = QLineEdit()
         self.input.setToolTip("Name under which fractal should be saved")
-        rx = QRegExp("([A-Z]|[0-9])+")
+        rx = QRegExp("([A-Z]|[a-z]|[0-9])+")
         validator = QRegExpValidator(rx, self)
         self.input.setValidator(validator)
         button = QPushButton('Save')
