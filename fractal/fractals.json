@@ -1,1 +1,41 @@
-[{"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": 0, "n": 7}, {"name": "Fractal Binary Tree", "axiom": "A", "rules": {"B": "B", "A": "B[A]A"}, "angle": 0, "n": 3}, {"name": "Koch Curve", "axiom": "F", "rules": {"A": "A+A-A-A+A"}, "angle": 90, "n": 4}, {"name": "Plant", "axiom": "X", "rules": {"X": "A+[[X]-X]-A[-AX]+X", "A": "AA"}, "angle": 25, "n": 6}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "Algae", "axiom": "A", "rules": {"A": "AB", "B": "A"}, "angle": "0", "n": "7"}, {"name": "S", "axiom": "BBAABBA", "rules": {"": ""}, "angle": "", "n": "0"}, {"name": "asdasdasdasd", "axiom": "", "rules": {}, "angle": "0", "n": "0"}, {"name": "asdasdasdasd", "axiom": "", "rules": {"": ""}, "angle": "0", "n": "0"}]
+[
+  {
+    "name": "Algae",
+    "axiom": "A",
+    "rules": {
+      "A": "AB",
+      "B": "A"
+    },
+    "angle": 0,
+    "n": 7
+  },
+  {
+    "name": "Fractal Binary Tree",
+    "axiom": "A",
+    "rules": {
+      "B": "B",
+      "A": "B[A]A"
+    },
+    "angle": 0,
+    "n": 3
+  },
+  {
+    "name": "Koch Curve",
+    "axiom": "F",
+    "rules": {
+      "A": "A+A-A-A+A"
+    },
+    "angle": 90,
+    "n": 4
+  },
+  {
+    "name": "Plant",
+    "axiom": "X",
+    "rules": {
+      "X": "A+[[X]-X]-A[-AX]+X",
+      "A": "AA"
+    },
+    "angle": 25,
+    "n": 6
+  }
+]
