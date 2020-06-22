@@ -33,6 +33,8 @@ class Edit(QWidget):
         # Load fractal if applicable
         if info is not None:
             self.load_fractal(info)
+        else:
+            self.settings_layout.rules.add_rule()
 
     def load_fractal(self, info):
         self.settings_layout.load_fractal(info)
@@ -200,6 +202,7 @@ class Rules(QGroupBox):
         self.layout = QVBoxLayout()
 
         self.rules_layout = QVBoxLayout()
+        self.rules_layout.setAlignment(Qt.AlignTop)
         scroll_area = QScrollArea()
         scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -207,6 +210,7 @@ class Rules(QGroupBox):
         scroll_content = QFrame()
         scroll_content.setLayout(self.rules_layout)
         scroll_area.setWidget(scroll_content)
+        # scroll_area.setFrameShape(QFrame.StyledPanel)
 
         self.layout.addWidget(scroll_area)
         add_button = QPushButton(text='Add Rule')
@@ -226,6 +230,10 @@ class Rules(QGroupBox):
         rule.remove_signal.connect(self.remove_rule)
         rule.index = len(self.rules)
         self.rules.append(rule)
+        if len(self.rules) > 1:
+            self.rules[0].show_remove()
+        else:
+            self.rules[0].hide_remove()
 
     @Slot(int)
     def remove_rule(self, index):
@@ -237,6 +245,8 @@ class Rules(QGroupBox):
     def update_rule_indices(self):
         for i in range(len(self.rules)):
             self.rules[i].index = i
+        if len(self.rules) == 1:
+            self.rules[0].hide_remove()
 
 
 class Rule(QWidget):
@@ -259,18 +269,24 @@ class Rule(QWidget):
         to_rx = QRegExp("[A-Z]+")
         to_validator = QRegExpValidator(to_rx, self)
         self.to_input.setValidator(to_validator)
-        remove_button = QPushButton('rm')
-        remove_button.setToolTip("Remove this rule")
-        remove_button.setFixedWidth(40)
-        remove_button.clicked.connect(self.remove)
+        self.remove_button = QPushButton('rm')
+        self.remove_button.setToolTip("Remove this rule")
+        self.remove_button.setFixedWidth(40)
+        self.remove_button.clicked.connect(self.remove)
         layout.addWidget(self.from_input)
         layout.addWidget(arrow)
         layout.addWidget(self.to_input)
-        layout.addWidget(remove_button)
+        layout.addWidget(self.remove_button)
         self.setLayout(layout)
 
     def remove(self):
         self.remove_signal.emit(self.index)
+
+    def hide_remove(self):
+        self.remove_button.setHidden(True)
+
+    def show_remove(self):
+        self.remove_button.setHidden(False)
 
 
 class Interations(QGroupBox):
