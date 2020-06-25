@@ -66,7 +66,11 @@ class FractalInfo(QGroupBox):
         self.setTitle(info['name'])
         self.info = info
         layout = QVBoxLayout()
+        img_path = fractal.fractal_img_path(info["name"])
+        img = QPixmap(img_path)
         self.image = QLabel("Fractal Image")
+        self.image.setPixmap(img)
+        self.image.setScaledContents(True)
         dash = QFrame()
         dash.setFrameShape(QFrame.HLine)
         layout.addWidget(self.image)

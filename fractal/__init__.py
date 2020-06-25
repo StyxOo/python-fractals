@@ -25,4 +25,9 @@ def delete_fractal(name):
 def fractal_json_path():
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'fractals.json')
 
+
+def fractal_img_path(name):
+    file = os.path.dirname(os.path.realpath(__file__))
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), './images/{0}.png'.format(name))
+
 load_fractals()

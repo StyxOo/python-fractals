@@ -6,7 +6,7 @@ def process_fractal(fractal_settings):
     settings = fractal_settings
     string = settings['axiom']
 
-    for i in range(settings['n']):
+    for i in range(int(settings['n'])):
         string = _process_string(string)
     return string
 

@@ -1,8 +1,3 @@
-"""
-This window holds the edit section.
-Here it is possible to change the properties of the fractal, as well as drawing it to the screen.
-"""
-
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 from PySide2.QtGui import *
@@ -10,37 +5,9 @@ from PySide2.QtGui import *
 import fractal
 
 
-class Edit(QWidget):
-
-    def __init__(self, info=None, parent=None):
-        super(Edit, self).__init__(parent)
-
-        # Create two main sections of edit window
-        main_layout = QHBoxLayout(self)
-        draw_layout = QVBoxLayout(self)
-        self.settings_layout = Settings(self)
-        self.settings_layout.setFixedWidth(350)
-        main_layout.addLayout(draw_layout)
-        main_layout.addWidget(self.settings_layout)
-
-        # Flesh out draw section
-        draw_text = QTextEdit('Draw')
-        draw_layout.addWidget(draw_text)
-
-        # Set main layout
-        self.setLayout(main_layout)
-
-        # Load fractal if applicable
-        if info is not None:
-            self.load_fractal(info)
-        else:
-            self.settings_layout.rules.add_rule()
-
-    def load_fractal(self, info):
-        self.settings_layout.load_fractal(info)
-
-
 class Settings(QWidget):
+    save_signal = Signal(str)
+
     def __init__(self, parent=None):
         super(Settings, self).__init__(parent)
 
@@ -107,6 +74,7 @@ class Settings(QWidget):
     def save_fractal(self):
         info = self.read_info()
         fractal.save_fractal(info)
+        self.save_signal.emit(info['name'])
 
     def load_fractal(self, info):
         self.save.input.setText(info['name'])
@@ -115,18 +83,6 @@ class Settings(QWidget):
             self.rules.add_rule(key, info['rules'][key])
         self.angle.set_value(info['angle'])
         self.iterations.slider.setValue(int(info['n']))
-
-
-class Parameters(QGroupBox):
-    def __init__(self, parent=None):
-        super(Parameters, self).__init__(parent)
-        self.setTitle("Parameters")
-        self.layout = QVBoxLayout()
-        self.init_ui()
-        self.setLayout(self.layout)
-
-    def init_ui(self):
-        pass
 
 
 class Axiom(QGroupBox):
@@ -301,7 +257,6 @@ class Interations(QGroupBox):
         self.slider.setTickInterval(1)
         self.slider.setMinimum(0)
         self.slider.setMaximum(10)
-        self.slider.setTickInterval(1)
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.valueChanged.connect(self.on_slider_value_change)
         self.value_label = QLabel()
