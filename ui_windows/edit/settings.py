@@ -95,6 +95,7 @@ class Settings(QWidget):
 
     def load_fractal(self, info):
         self.save.input.setText(info['name'])
+        self.save.name_check()
         self.axiom.input.setText(info['axiom'])
         for key in info['rules'].keys():
             self.rules.add_rule(key, info['rules'][key])
@@ -319,10 +320,11 @@ class Save(QWidget):
         rx = QRegExp("([A-Z]|[a-z]|[0-9]|\-|\_|\ )+")
         validator = QRegExpValidator(rx, self)
         self.input.setValidator(validator)
+        self.input.textChanged.connect(self.name_check)
 
-        save_button = QPushButton('Save')
-        save_button.setToolTip("Save")
-        save_button.clicked.connect(self.save)
+        self.save_button = QPushButton('Save')
+        self.save_button.setToolTip("Save")
+        self.save_button.clicked.connect(self.save)
 
         back_button = QPushButton('Back')
         back_button.setToolTip("Return to dashboard")
@@ -331,14 +333,18 @@ class Save(QWidget):
         v_layout.addWidget(self.input)
         v_layout.addLayout(layout)
         layout.addWidget(back_button)
-        layout.addWidget(save_button)
+        layout.addWidget(self.save_button)
         self.setLayout(v_layout)
+        self.name_check()
 
     def save(self):
         self.save_signal.emit()
 
     def back(self):
         self.back_signal.emit()
+
+    def name_check(self):
+        self.save_button.setEnabled(len(self.input.text()) > 0)
 
 
 class SaveDialog(QDialog):

@@ -44,6 +44,7 @@ class Drawing(QGroupBox):
         super(Drawing, self).__init__(parent)
         self.setTitle("Drawing")
         self.setFixedSize(628, 638)
+        self.setToolTip("Click and drag to draw fractal")
 
         layout = QVBoxLayout()
         self.setLayout(layout)
