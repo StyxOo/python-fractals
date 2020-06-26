@@ -14,14 +14,15 @@ class Draw(QWidget):
         main_layout = QVBoxLayout(self)
 
         self.drawing = Drawing()
+        self.drawing.draw_signal.connect(self.on_draw)
         main_layout.addWidget(self.drawing)
 
         self.fractal_label = Fractal()
         main_layout.addWidget(self.fractal_label)
 
-        self.draw_control = DrawControlls()
-        self.draw_control.draw_signal.connect(self.on_draw)
-        main_layout.addWidget(self.draw_control)
+        # self.draw_control = DrawControlls()
+        # self.draw_control.draw_signal.connect(self.on_draw)
+        # main_layout.addWidget(self.draw_control)
 
     def draw_fractal(self, fractal, angle):
         self.fractal_label.set_fractal(fractal)
@@ -33,6 +34,12 @@ class Draw(QWidget):
 
 
 class Drawing(QGroupBox):
+    draw_signal = Signal()
+
+    startPos = None
+    endPos = None
+    mouse_offset = QPoint(10, 20)
+
     def __init__(self, parent=None):
         super(Drawing, self).__init__(parent)
         self.setTitle("Drawing")
@@ -49,7 +56,9 @@ class Drawing(QGroupBox):
 
     def draw(self, fractal, angle):
         self.draw_widget.pixmap().fill()
-        painter = Painter(self.draw_widget.pixmap(), 200, 500, 200, 498)
+        painter = Painter(self.draw_widget.pixmap(), self.startPos.x(), self.startPos.y(), self.endPos.x(), self.endPos.y())
+        self.startPos = None
+        self.endPos = None
         for c in fractal:
             if c == '+':
                 painter.rotate(angle)
@@ -66,16 +75,26 @@ class Drawing(QGroupBox):
     def save_drawing(self, path):
         self.draw_widget.pixmap().save(path)
 
+    def mousePressEvent(self, event):
+        if self.startPos is None:
+            self.startPos = event.pos() - self.mouse_offset
+
+    def mouseReleaseEvent(self, event):
+        if self.startPos is not None and self.draw_widget.rect().contains(event.pos()):
+            self.endPos = event.pos() - self.mouse_offset
+            self.draw_signal.emit()
+
 
 class Fractal(QGroupBox):
     def __init__(self, parent=None):
         super(Fractal, self).__init__(parent)
         self.setTitle("Fractal")
-        self.setFixedHeight(70)
+        self.setFixedHeight(120)
 
         layout = QVBoxLayout()
 
         self.label = QLabel("Fractal will show here")
+        self.label.setWordWrap(True)
         layout.addWidget(self.label)
 
         self.setLayout(layout)
@@ -84,7 +103,7 @@ class Fractal(QGroupBox):
         self.label.setText(fractal)
 
 
-class DrawControlls(QWidget):
+class DrawControlls(QFrame):
     draw_signal = Signal()
 
     def __init__(self, parent=None):

@@ -79,8 +79,10 @@ class FractalInfo(QGroupBox):
         layout.addWidget(self.button)
         self.setLayout(layout)
 
-    def mousePressEvent(self, event:QMouseEvent):
-        self.load_self()
+    def mouseReleaseEvent(self, event):
+        mouse_pos = event.pos()
+        if self.rect().contains(mouse_pos):
+            self.load_self()
 
     def load_self(self):
         print("Load {0}".format(self.info['name']))

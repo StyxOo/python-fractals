@@ -8,7 +8,7 @@ import math
 class Painter:
     def __init__(self, canvas, x1, y1, x2, y2):
         self.canvas = canvas
-        self.ahead = (x2 - x1, y2 - y1)
+        self.ahead = ((x2 - x1) / 10, (y2 - y1) / 10)
         self.position = (x1, y1)
         self.positions = []
 
