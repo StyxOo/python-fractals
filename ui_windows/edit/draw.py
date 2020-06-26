@@ -43,13 +43,13 @@ class Drawing(QGroupBox):
     def __init__(self, parent=None):
         super(Drawing, self).__init__(parent)
         self.setTitle("Drawing")
-        self.setFixedSize(683, 550)
+        self.setFixedSize(628, 638)
 
         layout = QVBoxLayout()
         self.setLayout(layout)
 
         self.draw_widget = QLabel()
-        canvas = QPixmap(515, 515)
+        canvas = QPixmap(600, 600)
         canvas.fill()
         self.draw_widget.setPixmap(canvas)
         layout.addWidget(self.draw_widget)
@@ -93,9 +93,16 @@ class Fractal(QGroupBox):
 
         layout = QVBoxLayout()
 
-        self.label = QLabel("Fractal will show here")
+        self.label = QLabel("  Fractal will show here")
         self.label.setWordWrap(True)
-        layout.addWidget(self.label)
+
+        scroll_area = QScrollArea()
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(self.label)
+
+        layout.addWidget(scroll_area)
 
         self.setLayout(layout)
 

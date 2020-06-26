@@ -17,21 +17,23 @@ class MyApplication(QMainWindow):
 
         self.show_dashboard()
 
-        content_menu = self.menuBar().addMenu("Tools")
-        content_menu.addAction('show Dashboard', self.show_dashboard)
-        content_menu.addAction('show Edit', self.show_edit)
+        # content_menu = self.menuBar().addMenu("Tools")
+        # content_menu.addAction('show Dashboard', self.show_dashboard)
+        # content_menu.addAction('show Edit', self.show_edit)
 
-        self.setFixedSize(1075, 800)
+        self.setFixedSize(1020, 800)
 
     def show_dashboard(self):
         dashboard = Dashboard()
         dashboard.load_signal.connect(self.show_edit)
+        dashboard.deleted_signal.connect(self.show_dashboard)
         self.setCentralWidget(dashboard)
         dashboard.show()
         self.setWindowTitle('Dashboard')
 
     def show_edit(self, info=None):
         edit = Edit(info=info)
+        edit.back_signal.connect(self.show_dashboard)
         self.setCentralWidget(edit)
         edit.show()
         self.setWindowTitle('Edit')

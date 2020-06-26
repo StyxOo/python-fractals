@@ -16,6 +16,7 @@ from ui_windows.edit.draw import Draw
 
 
 class Edit(QWidget):
+    back_signal = Signal()
 
     def __init__(self, info=None, parent=None):
         super(Edit, self).__init__(parent)
@@ -27,6 +28,7 @@ class Edit(QWidget):
         self.settings_layout = Settings(self)
         self.settings_layout.setFixedWidth(350)
         self.settings_layout.save_signal.connect(self.save_img)
+        self.settings_layout.back_signal.connect(self.back)
         main_layout.addWidget(self.draw_layout)
         main_layout.addWidget(self.settings_layout)
 
@@ -50,3 +52,7 @@ class Edit(QWidget):
     def save_img(self, name):
         path = fractal.fractal_img_path(name)
         self.draw_layout.drawing.save_drawing(path)
+
+    @Slot()
+    def back(self):
+        self.back_signal.emit()

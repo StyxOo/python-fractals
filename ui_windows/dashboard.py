@@ -12,27 +12,29 @@ from PySide2.QtGui import *
 
 class Dashboard(QWidget):
     load_signal = Signal(dict)
+    deleted_signal = Signal()
 
     def __init__(self, parent=None):
         super(Dashboard, self).__init__(parent)
 
         layout = QVBoxLayout()
 
-        info_widgets = []
+        self.info_widgets = []
         for info in fractal.fractals:
             fractal_info = FractalInfo(info)
             fractal_info.load_signal.connect(self.load_fractal)
-            info_widgets.append(fractal_info)
+            fractal_info.remove_signal.connect(self.info_deleted)
+            self.info_widgets.append(fractal_info)
         new_fractal = NewFractal()
         new_fractal.new_fractal.connect(self.load_signal)
-        info_widgets.append(new_fractal)
-        info_widget = InfosContainer(info_widgets, self)
+        self.info_widgets.append(new_fractal)
+        self.info_widget = InfosContainer(self.info_widgets, self)
 
         scroll_area = QScrollArea()
         scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll_area.setWidgetResizable(False)
-        scroll_area.setWidget(info_widget)
+        scroll_area.setWidget(self.info_widget)
 
         layout.addWidget(scroll_area)
 
@@ -41,6 +43,10 @@ class Dashboard(QWidget):
     @Slot(dict)
     def load_fractal(self, info):
         self.load_signal.emit(info)
+
+    @Slot()
+    def info_deleted(self):
+        self.deleted_signal.emit()
 
 
 class InfosContainer(QWidget):
@@ -58,11 +64,12 @@ class InfosContainer(QWidget):
 
 class FractalInfo(QGroupBox):
     load_signal = Signal(dict)
+    remove_signal = Signal()
 
     def __init__(self, info, parent=None):
         super(FractalInfo, self).__init__(parent)
         # self.setFrameShape(QFrame.Box)
-        self.setFixedSize(250, 300)
+        self.setFixedSize(232, 290)
         self.setTitle(info['name'])
         self.info = info
         layout = QVBoxLayout()
@@ -75,7 +82,9 @@ class FractalInfo(QGroupBox):
         dash.setFrameShape(QFrame.HLine)
         layout.addWidget(self.image)
         layout.addWidget(dash)
-        self.button = QPushButton("Remove")
+        self.button = QPushButton("Delete")
+        self.button.setFixedHeight(40)
+        self.button.clicked.connect(self.delete_self)
         layout.addWidget(self.button)
         self.setLayout(layout)
 
@@ -88,22 +97,36 @@ class FractalInfo(QGroupBox):
         print("Load {0}".format(self.info['name']))
         self.load_signal.emit(self.info)
 
+    def delete_self(self):
+        self.delete_dialog = RemoveDialog()
+        self.delete_dialog.show()
+        self.delete_dialog.accepted.connect(self.confirm_delete)
+
+    def confirm_delete(self):
+        fractal.delete_fractal(self.info['name'])
+        self.remove_signal.emit()
+
 
 class NewFractal(QGroupBox):
     new_fractal = Signal(dict)
 
     def __init__(self, parent=None):
         super(NewFractal, self).__init__(parent)
-        self.setFixedSize(250, 300)
+        self.setFixedSize(232, 290)
         self.setTitle("New Fractal")
         layout = QVBoxLayout()
-        self.image = QLabel("Fractal Image")
+
+        image = QPixmap('./assets/baseline_add_black_48dp.png')
+        self.image = QLabel()
+        self.image.setPixmap(image)
+        self.image.setScaledContents(True)
         dash = QFrame()
         dash.setFrameShape(QFrame.HLine)
         layout.addWidget(self.image)
         layout.addWidget(dash)
         self.button = QPushButton("New fractal")
         self.button.clicked.connect(self.create_new)
+        self.button.setFixedHeight(40)
         layout.addWidget(self.button)
         self.setLayout(layout)
 
@@ -112,3 +135,29 @@ class NewFractal(QGroupBox):
 
     def create_new(self):
         self.new_fractal.emit(None)
+
+
+class RemoveDialog(QDialog):
+    overwrite_signal = Signal()
+
+    def __init__(self, parent=None):
+        super(RemoveDialog, self).__init__(parent)
+        self.setWindowTitle("Delete")
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QLabel('Are you sure you want to delete the fractal?')
+        label.setWordWrap(True)
+        layout.addWidget(label)
+
+        button_layout = QHBoxLayout()
+        layout.addLayout(button_layout)
+
+        confirm_button = QPushButton("Delete")
+        confirm_button.clicked.connect(self.accept)
+        button_layout.addWidget(confirm_button)
+
+        cancel_button = QPushButton("Cancel")
+        cancel_button.clicked.connect(self.reject)
+        button_layout.addWidget(cancel_button)

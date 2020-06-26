@@ -7,6 +7,9 @@ import fractal
 
 class Settings(QWidget):
     save_signal = Signal(str)
+    back_signal = Signal()
+
+    has_changed = False
 
     def __init__(self, parent=None):
         super(Settings, self).__init__(parent)
@@ -52,10 +55,13 @@ class Settings(QWidget):
         # Save
         self.save = Save(save_group)
         self.save.save_signal.connect(self.save_fractal)
+        self.save.back_signal.connect(self.back)
         save_layout.addWidget(self.save)
 
         # Set main layout
         self.setLayout(main_layout)
+
+        self.original_info = self.read_info()
 
     def read_info(self):
         info = {}
@@ -73,6 +79,17 @@ class Settings(QWidget):
     @Slot()
     def save_fractal(self):
         info = self.read_info()
+        if self.original_info != info:
+            if not fractal.name_available(info['name']):
+                self.dialog = SaveDialog()
+                self.dialog.show()
+                self.dialog.accepted.connect(self.accept_save)
+            else:
+                self.accept_save()
+
+    def accept_save(self):
+        info = self.read_info()
+        self.original_info = info
         fractal.save_fractal(info)
         self.save_signal.emit(info['name'])
 
@@ -83,6 +100,20 @@ class Settings(QWidget):
             self.rules.add_rule(key, info['rules'][key])
         self.angle.set_value(info['angle'])
         self.iterations.slider.setValue(int(info['n']))
+        self.original_info = self.read_info()
+
+    @Slot()
+    def back(self):
+        info = self.read_info()
+        if self.original_info != info:
+            self.back_dialog = BackDialog()
+            self.back_dialog.show()
+            self.back_dialog.accepted.connect(self.confirm_back)
+        else:
+            self.confirm_back()
+
+    def confirm_back(self):
+        self.back_signal.emit()
 
 
 class Axiom(QGroupBox):
@@ -222,13 +253,17 @@ class Rule(QWidget):
         arrow = QLabel('->')
         self.to_input = QLineEdit()
         self.to_input.setToolTip("Characters which should be placed instead")
-        to_rx = QRegExp("[A-Z]+")
+        to_rx = QRegExp("([A-Z]|\+|\-|\[|\])+")
         to_validator = QRegExpValidator(to_rx, self)
         self.to_input.setValidator(to_validator)
-        self.remove_button = QPushButton('rm')
+
+        icon = QIcon('./assets/baseline_remove_circle_black_18dp.png')
+        self.remove_button = QPushButton()
+        self.remove_button.setIcon(icon)
         self.remove_button.setToolTip("Remove this rule")
-        self.remove_button.setFixedWidth(40)
+        self.remove_button.setFixedWidth(25)
         self.remove_button.clicked.connect(self.remove)
+
         layout.addWidget(self.from_input)
         layout.addWidget(arrow)
         layout.addWidget(self.to_input)
@@ -272,22 +307,87 @@ class Interations(QGroupBox):
 
 class Save(QWidget):
     save_signal = Signal()
+    back_signal = Signal()
 
     def __init__(self, parent=None):
         super(Save, self).__init__(parent)
         # self.setTitle("Save")
+        v_layout = QVBoxLayout()
         layout = QHBoxLayout()
         self.input = QLineEdit()
         self.input.setToolTip("Name under which fractal should be saved")
-        rx = QRegExp("([A-Z]|[a-z]|[0-9])+")
+        rx = QRegExp("([A-Z]|[a-z]|[0-9]|\-|\_|\ )+")
         validator = QRegExpValidator(rx, self)
         self.input.setValidator(validator)
-        button = QPushButton('Save')
-        button.setToolTip("Save")
-        button.clicked.connect(self.save)
-        layout.addWidget(self.input)
-        layout.addWidget(button)
-        self.setLayout(layout)
+
+        save_button = QPushButton('Save')
+        save_button.setToolTip("Save")
+        save_button.clicked.connect(self.save)
+
+        back_button = QPushButton('Back')
+        back_button.setToolTip("Return to dashboard")
+        back_button.clicked.connect(self.back)
+
+        v_layout.addWidget(self.input)
+        v_layout.addLayout(layout)
+        layout.addWidget(back_button)
+        layout.addWidget(save_button)
+        self.setLayout(v_layout)
 
     def save(self):
         self.save_signal.emit()
+
+    def back(self):
+        self.back_signal.emit()
+
+
+class SaveDialog(QDialog):
+    overwrite_signal = Signal()
+
+    def __init__(self, parent=None):
+        super(SaveDialog, self).__init__(parent)
+        self.setWindowTitle("Save")
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QLabel('A fractal with the given name already exists. Overwrite?')
+        label.setWordWrap(True)
+        layout.addWidget(label)
+
+        button_layout = QHBoxLayout()
+        layout.addLayout(button_layout)
+
+        confirm_button = QPushButton("Overwrite")
+        confirm_button.clicked.connect(self.accept)
+        button_layout.addWidget(confirm_button)
+
+        cancel_button = QPushButton("Cancel")
+        cancel_button.clicked.connect(self.reject)
+        button_layout.addWidget(cancel_button)
+
+
+class BackDialog(QDialog):
+    overwrite_signal = Signal()
+
+    def __init__(self, parent=None):
+        super(BackDialog, self).__init__(parent)
+        self.setWindowTitle("Back")
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QLabel('Changes not saved. Are you sure you want to return to dashboard?')
+        label.setWordWrap(True)
+        layout.addWidget(label)
+
+        button_layout = QHBoxLayout()
+        layout.addLayout(button_layout)
+
+        confirm_button = QPushButton("Dashboard")
+        confirm_button.clicked.connect(self.accept)
+        button_layout.addWidget(confirm_button)
+
+        cancel_button = QPushButton("Cancel")
+        cancel_button.clicked.connect(self.reject)
+        button_layout.addWidget(cancel_button)
