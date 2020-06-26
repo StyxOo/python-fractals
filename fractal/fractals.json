@@ -21,7 +21,7 @@
   },
   {
     "name": "Koch Curve",
-    "axiom": "F",
+    "axiom": "A",
     "rules": {
       "A": "A+A-A-A+A"
     },
