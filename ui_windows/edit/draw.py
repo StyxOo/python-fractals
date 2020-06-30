@@ -17,6 +17,12 @@ class Draw(QWidget):
         self.drawing.draw_signal.connect(self.on_draw)
         main_layout.addWidget(self.drawing)
 
+        self.draw_settings = DrawSettings()
+        self.draw_settings.random_changed.connect(self.drawing.set_random_color)
+        self.draw_settings.mark_first_changed.connect(self.drawing.set_mark_first)
+        self.draw_settings.mark_nodes_changed.connect(self.drawing.set_mark_nodes)
+        main_layout.addWidget(self.draw_settings)
+
         self.fractal_label = Fractal()
         main_layout.addWidget(self.fractal_label)
 
@@ -55,9 +61,15 @@ class Drawing(QGroupBox):
         self.draw_widget.setPixmap(canvas)
         layout.addWidget(self.draw_widget)
 
+        self.random_color = False
+        self.mark_first = False
+        self.mark_nodes = False
+
     def draw(self, fractal, angle):
         self.draw_widget.pixmap().fill()
-        painter = Painter(self.draw_widget.pixmap(), self.startPos.x(), self.startPos.y(), self.endPos.x(), self.endPos.y())
+        painter = Painter(self.draw_widget.pixmap(),
+                          self.startPos.x(), self.startPos.y(), self.endPos.x(), self.endPos.y(),
+                          self.random_color, self.mark_first, self.mark_nodes)
         self.startPos = None
         self.endPos = None
         for c in fractal:
@@ -84,6 +96,18 @@ class Drawing(QGroupBox):
         if self.startPos is not None and self.draw_widget.rect().contains(event.pos()):
             self.endPos = event.pos() - self.mouse_offset
             self.draw_signal.emit()
+
+    @Slot(bool)
+    def set_random_color(self, value):
+        self.random_color = value
+
+    @Slot(bool)
+    def set_mark_first(self, value):
+        self.mark_first=value
+
+    @Slot(bool)
+    def set_mark_nodes(self, value):
+        self.mark_nodes = value
 
 
 class Fractal(QGroupBox):
@@ -125,9 +149,9 @@ class DrawControlls(QFrame):
         self.speed = DrawSpeed()
         layout.addWidget(self.speed)
 
-        self.buttons = DrawButtons()
-        self.buttons.draw_signal.connect(self.on_draw)
-        layout.addWidget(self.buttons)
+        # self.buttons = DrawButtons()
+        # self.buttons.draw_signal.connect(self.on_draw)
+        # layout.addWidget(self.buttons)
 
     @Slot()
     def on_draw(self):
@@ -152,22 +176,35 @@ class DrawSpeed(QGroupBox):
         layout.addWidget(self.slider)
 
 
-class DrawButtons(QGroupBox):
-    draw_signal = Signal()
+class DrawSettings(QGroupBox):
+    random_changed = Signal(bool)
+    mark_first_changed = Signal(bool)
+    mark_nodes_changed = Signal(bool)
 
     def __init__(self, parent=None):
-        super(DrawButtons, self).__init__(parent)
-        self.setTitle("Buttons")
+        super(DrawSettings, self).__init__(parent)
+        self.setTitle("Controlls")
 
         layout = QHBoxLayout()
         self.setLayout(layout)
 
-        self.draw_button = QPushButton("Draw")
-        self.draw_button.clicked.connect(self.on_draw)
-        layout.addWidget(self.draw_button)
+        self.random_color = QCheckBox("Randomize Colors")
+        self.random_color.stateChanged.connect(self.set_random)
+        layout.addWidget(self.random_color)
 
-        self.first_draw_button = QPushButton("drw")
-        layout.addWidget(self.first_draw_button)
+        self.mark_first = QCheckBox("Mark First Line")
+        self.mark_first.stateChanged.connect(self.set_first)
+        layout.addWidget(self.mark_first)
 
-    def on_draw(self):
-        self.draw_signal.emit()
+        self.mark_nodes = QCheckBox("Mark Nodes")
+        self.mark_nodes.stateChanged.connect(self.set_nodes)
+        layout.addWidget(self.mark_nodes)
+
+    def set_random(self):
+        self.random_changed.emit(self.random_color.isChecked())
+
+    def set_first(self):
+        self.mark_first_changed.emit(self.mark_first.isChecked())
+
+    def set_nodes(self):
+        self.mark_nodes_changed.emit(self.mark_nodes.isChecked())
