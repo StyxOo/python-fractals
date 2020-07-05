@@ -18,12 +18,12 @@ To run the GUI, execute the `fractal_ui.py`. This can be found in the main direc
 
 ### The Dashboard
 When You run the project, the first screen you will see is the dashboard. It looks like this:  
-![image not found](dashboard.png "Dashboard")  
+![image not found](dashboard.PNG "Dashboard")  
 Here you can see all the systems you already saved. It comes with a few default ones to give you an idea about how it works. You can click on any of them to open them. Or you can click on the new button to create a new one. As an example, let's open up the "Koch Curve". You will then be greeted by the:
 
 ### Edit Screen
 The edit screen for the "Koch Curve" looks as follows:  
-![image not found](edit.png "Edit")  
+![image not found](edit.PNG "Edit")  
 Let's have a closer look at its parts. The left side is where all the drawing of the fractal happens. To draw it, simply click and drag inside the "Drawing" section to draw the first segment of your L-system. this will be used as a reference to draw your L-system. Give is a try.  
 Next let's have a look at the controls we can find below. There are three options. The first option, "Randomize Colors" gives each segment in the fractal a random color. The second option markes the first segment, the one You drew manually, in red. The last option, "Mark Nodes", draws a small circle at the end of each of the segments.  
 Below it we can find the Fractal. This shows Your string after all the iterations with all the rules applied.  
