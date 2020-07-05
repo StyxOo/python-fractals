@@ -10,6 +10,7 @@ class Settings(QWidget):
     back_signal = Signal()
 
     has_changed = False
+    is_drawn = False
 
     def __init__(self, parent=None):
         super(Settings, self).__init__(parent)
@@ -81,6 +82,10 @@ class Settings(QWidget):
         info = self.read_info()
         if self.original_info != info:
             if not fractal.name_available(info['name']):
+                if not self.is_drawn:
+                    self.draw_dialog = DrawnDialog()
+                    self.draw_dialog.show()
+                    return
                 self.dialog = SaveDialog()
                 self.dialog.show()
                 self.dialog.accepted.connect(self.accept_save)
@@ -397,3 +402,21 @@ class BackDialog(QDialog):
         cancel_button = QPushButton("Cancel")
         cancel_button.clicked.connect(self.reject)
         button_layout.addWidget(cancel_button)
+
+
+class DrawnDialog(QDialog):
+    def __init__(self, parent=None):
+        super(DrawnDialog, self).__init__(parent)
+        self.setWindowTitle("Drawing")
+        self.setFixedWidth(200)
+
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        label = QLabel('Please draw the fractal before saving.')
+        label.setWordWrap(True)
+        layout.addWidget(label)
+
+        ok_button = QPushButton("OK")
+        ok_button.clicked.connect(self.accept)
+        layout.addWidget(ok_button)

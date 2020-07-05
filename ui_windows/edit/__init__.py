@@ -48,6 +48,7 @@ class Edit(QWidget):
         info = self.settings_layout.read_info()
         fractal = processor.process_fractal(info)
         self.draw_layout.draw_fractal(fractal, int(info['angle']))
+        self.settings_layout.is_drawn = True
 
     def save_img(self, name):
         path = fractal.fractal_img_path(name)
